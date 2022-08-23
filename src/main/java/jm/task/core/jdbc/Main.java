@@ -1,30 +1,19 @@
 package jm.task.core.jdbc;
 
 import jm.task.core.jdbc.dao.UserDao;
-import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
-import jm.task.core.jdbc.util.Util;
+import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 
-import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
-        // реализуйте алгоритм здесь
-        String url = "jdbc:mysql://localhost:3306/test";
-        String userName = "root";
-        String password = "admin";
-        Util.getConnection();
-        UserDao userDao = new UserDaoJDBCImpl();
+    public static void main(String[] args) {
 
-        userDao.createUsersTable();
+        UserDao hibernate = new UserDaoHibernateImpl();
 
-        userDao.saveUser("Name1", "LastName1", (byte) 20);
-        userDao.saveUser("Name2", "LastName2", (byte) 25);
-        userDao.saveUser("Name3", "LastName3", (byte) 31);
-        userDao.saveUser("Name4", "LastName4", (byte) 38);
+        hibernate.createUsersTable();
+        hibernate.saveUser("Joaquin", "Phoenix", (byte) 48);
+        hibernate.saveUser("Ryan", "Reynolds", (byte) 46);
+        hibernate.saveUser("Jim", "Carrey", (byte) 60);
+        hibernate.getAllUsers();
 
-        userDao.removeUserById(1);
-        userDao.getAllUsers();
-        userDao.cleanUsersTable();
-        userDao.dropUsersTable();
     }
 }

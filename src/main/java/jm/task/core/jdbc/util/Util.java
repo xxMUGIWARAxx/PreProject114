@@ -1,26 +1,37 @@
 package jm.task.core.jdbc.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import jm.task.core.jdbc.model.User;
+import org.hibernate.HibernateException;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
+
+import java.util.Properties;
 
 public class Util {
-    // реализуйте настройку соеденения с БД
-    private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/my_db";
-    private static final String DB_USERNAME = "root";
-    private static final String DB_PASSWORD = "admin";
+    private static SessionFactory sessionFactory = null;
 
-    public static Connection getConnection() {
-        Connection connection = null;
+    public static SessionFactory getSessionFactory() {
         try {
-            Class.forName(DB_DRIVER);
-            connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
-            System.out.println("connection OK");
-        } catch (ClassNotFoundException | SQLException e) {
+            Configuration configuration = new Configuration();
+            Properties properties = new Properties();
+            configuration.setProperties(properties);
+            properties.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+            properties.put(Environment.URL, "jdbc:mysql://localhost:3306/my_db");
+            properties.put(Environment.USER, "root");
+            properties.put(Environment.PASS, "admin");
+            properties.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
+            properties.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+            configuration.addAnnotatedClass(User.class);
+            ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                    .applySettings(configuration.getProperties()).build();
+
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+        } catch (HibernateException e) {
             e.printStackTrace();
-            System.out.println("Connection ERROR");
         }
-        return connection;
+        return sessionFactory;
     }
 }
